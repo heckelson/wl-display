@@ -1,0 +1,118 @@
+0a1,11
+> /*
+>   Rui Santos & Sara Santos - Random Nerd Tutorials
+> 
+>   Install the "TFT_eSPI" library by Bodmer to interface with the TFT Display - https://github.com/Bodmer/TFT_eSPI
+>   *** IMPORTANT: User_Setup.h available on the internet will probably NOT work with the examples available at Random Nerd Tutorials ***
+>   *** YOU MUST USE THIS User_Setup.h FILE, CHECK FOR THE LATEST VERSION IN THE LINK BELOW IN ORDER TO USE THE EXAMPLES FROM RANDOM NERD TUTORIALS ***
+>   https://RandomNerdTutorials.com/cyd/
+>   https://RandomNerdTutorials.com/esp32-tft/
+>   FULL INSTRUCTIONS AVAILABLE ON HOW CONFIGURE THE LIBRARY: https://RandomNerdTutorials.com/cyd/ or https://RandomNerdTutorials.com/esp32-tft/
+> */
+> 
+2c13
+< //   Set driver type, fonts to be loaded, pins used and SPI control method etc.
+---
+> //   Set driver type, fonts to be loaded, pins used and SPI control method etc
+31,32c42,43
+< // STM32 8-bit parallel only:
+< // If STN32 Port A or B pins 0-7 are used for 8-bit parallel data bus bits 0-7
+---
+> // STM32 8 bit parallel only:
+> // If STN32 Port A or B pins 0-7 are used for 8 bit parallel data bus bits 0-7
+39c50
+< //#defined TFT_PARALLEL_16_BIT // **** 16-bit parallel ONLY for RP2040 processor ****
+---
+> //#defined TFT_PARALLEL_16_BIT // **** 16 bit parallel ONLY for RP2040 processor ****
+45,46c56,57
+< #define ILI9341_DRIVER       // Generic driver for common displays
+< //#define ILI9341_2_DRIVER     // Alternative ILI9341 driver, see https://github.com/Bodmer/TFT_eSPI/issues/1172
+---
+> //#define ILI9341_DRIVER       // Generic driver for common displays
+> #define ILI9341_2_DRIVER     // Alternative ILI9341 driver, see https://github.com/Bodmer/TFT_eSPI/issues/1172
+87,88c98
+< // #define TFT_WIDTH  170 // ST7789 170 x 320
+< // #define TFT_WIDTH  240 // ST7789 240 x 240 and 240 x 320
+---
+> #define TFT_WIDTH  240 // ST7789 240 x 240 and 240 x 320
+92c102
+< // #define TFT_HEIGHT 320 // ST7789 240 x 320
+---
+> #define TFT_HEIGHT 320 // ST7789 240 x 320
+108c118
+< // #define ST7735_ROBOTLCD       // For some RobotLCD Arduino shields (128x160, BGR, https://docs.arduino.cc/retired/getting-started-guides/TFT)
+---
+> // #define ST7735_ROBOTLCD       // For some RobotLCD arduino shields (128x160, BGR, https://docs.arduino.cc/retired/getting-started-guides/TFT)
+116c126
+< // #define TFT_INVERSION_ON
+---
+> #define TFT_INVERSION_ON
+132,133c142,143
+< // #define TFT_BL   32            // LED back-light control pin
+< // #define TFT_BACKLIGHT_ON HIGH  // Level to turn ON back-light (HIGH or LOW)
+---
+> #define TFT_BL   21            // LED back-light control pin
+> #define TFT_BACKLIGHT_ON HIGH  // Level to turn ON back-light (HIGH or LOW)
+170,178c180,183
+< #define TFT_MISO  PIN_D6  // Automatically assigned with ESP8266 if not defined
+< #define TFT_MOSI  PIN_D7  // Automatically assigned with ESP8266 if not defined
+< #define TFT_SCLK  PIN_D5  // Automatically assigned with ESP8266 if not defined
+< 
+< #define TFT_CS    PIN_D8  // Chip select control pin D8
+< #define TFT_DC    PIN_D3  // Data Command control pin
+< #define TFT_RST   PIN_D4  // Reset pin (could connect to NodeMCU RST, see next line)
+< //#define TFT_RST  -1     // Set TFT_RST to -1 if the display RESET is connected to NodeMCU RST or 3.3V
+< 
+---
+> //#define TFT_CS   PIN_D8  // Chip select control pin D8
+> //#define TFT_DC   PIN_D3  // Data Command control pin
+> //#define TFT_RST  PIN_D4  // Reset pin (could connect to NodeMCU RST, see next line)
+> //#define TFT_RST  -1    // Set TFT_RST to -1 if the display RESET is connected to NodeMCU RST or 3.3V
+212,216c217,221
+< //#define TFT_MISO 19
+< //#define TFT_MOSI 23
+< //#define TFT_SCLK 18
+< //#define TFT_CS   15  // Chip select control pin
+< //#define TFT_DC    2  // Data Command control pin
+---
+> #define TFT_MISO 12
+> #define TFT_MOSI 13
+> #define TFT_SCLK 14
+> #define TFT_CS   15  // Chip select control pin
+> #define TFT_DC    2  // Data Command control pin
+218c223,225
+< //#define TFT_RST  -1  // Set TFT_RST to -1 if display RESET is connected to ESP32 board RST
+---
+> #define TFT_RST  -1  // Set TFT_RST to -1 if display RESET is connected to ESP32 board RST
+> 
+> #define TOUCH_CS 33     // Chip select pin (T_CS) of touch screen
+245c252
+< // The library supports 8-bit parallel TFTs with the ESP32, the pin
+---
+> // The library supports 8 bit parallel TFTs with the ESP32, the pin
+253c260
+< // Tell the library to use 8-bit parallel mode (otherwise SPI is assumed)
+---
+> // Tell the library to use 8 bit parallel mode (otherwise SPI is assumed)
+333c340
+< // For RP2040 processor and 8 or 16-bit parallel displays:
+---
+> // For RP2040 processor and 8 or 16 bit parallel displays:
+336,337c343,344
+< // to be increased when overclocking. It may also need to be adjusted dependant on the
+< // display controller type (ILI94341, HX8357C etc.). If RP2040_PIO_CLK_DIV is not defined
+---
+> // to be increased when overclocking. I may also need to be adjusted dependant on the
+> // display controller type (ILI94341, HX8357C etc). If RP2040_PIO_CLK_DIV is not defined
+363c370
+< #define SPI_FREQUENCY  27000000
+---
+> //#define SPI_FREQUENCY  27000000
+365c372
+< // #define SPI_FREQUENCY  55000000 // STM32 SPI1 only (SPI2 maximum is 27MHz)
+---
+> #define SPI_FREQUENCY  55000000 // STM32 SPI1 only (SPI2 maximum is 27MHz)
+377c384
+< //#define USE_HSPI_PORT
+---
+> #define USE_HSPI_PORT
