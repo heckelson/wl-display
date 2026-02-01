@@ -1,13 +1,10 @@
-import subprocess as sp
+import os
+import shutil
 
-try:
-    sp.check_output(
-        [
-            "patch",
-            "-N",
-            ".pio/libdeps/esp32dev/TFT_eSPI/User_Setup.h",
-            "patches/override_user_setup.h.diff",
-        ]
-    )
-except sp.CalledProcessError as err:
-    print(err)
+SOURCE = "patches/User_Setup.h"
+TARGET = ".pio/libdeps/esp32dev/TFT_eSPI/User_Setup.h"
+BACKUP = ".pio/libdeps/esp32dev/TFT_eSPI/User_Setup.h.backup"
+
+if not os.path.exists(BACKUP):
+    shutil.copy(TARGET, BACKUP)
+shutil.copy(SOURCE, TARGET)
