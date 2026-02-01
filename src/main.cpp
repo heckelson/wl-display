@@ -31,6 +31,8 @@ XPT2046_Touchscreen touchscreen(XPT2046_CS, XPT2046_IRQ);
 // Touchscreen coordinates: (x, y) and pressure (z)
 int x, y, z;
 
+lv_obj_t* label = nullptr;
+
 uint32_t** draw_buffer =
     (uint32_t**)malloc(sizeof(uint32_t) * DRAW_BUF_SIZE / 4);
 
@@ -97,7 +99,8 @@ retry:
         lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
         lv_indev_set_read_cb(indev, touchscreen_read_cb_func);
 
-        lv_obj_t* label = lv_label_create(lv_screen_active());
+        label = lv_label_create(lv_screen_active());
+
         lv_label_set_text(label, "Hello PlatformIO, I'm LVGL!");
         lv_obj_set_style_text_color(lv_screen_active(), lv_color_hex(0xffffff),
                                     LV_PART_MAIN);
@@ -131,6 +134,11 @@ void touchscreen_read_cb_func(lv_indev_t* indev, lv_indev_data_t* data) {
 
                 data->point.x = x;
                 data->point.y = y;
+
+                char* label_text;
+                asprintf(&label_text, "Coords: x=%d, y=%d", x, y);
+                lv_label_set_text(label, label_text);
+                free(label_text);
 
                 // Print Touchscreen info about X, Y and Pressure (Z) on the
                 // Serial Monitor
