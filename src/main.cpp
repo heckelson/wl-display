@@ -20,6 +20,8 @@
 // Note: this library doesn't require further configuration
 #include <XPT2046_Touchscreen.h>
 
+#include <lvgl.h>
+
 TFT_eSPI tft = TFT_eSPI();
 
 // Touchscreen pins
