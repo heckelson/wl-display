@@ -8,7 +8,7 @@
 
 #define TFT_BL   21
 #define TFT_BACKLIGHT_ON HIGH
-
+#define TFT_INVERSION_ON
 
 #define TFT_MISO 12
 #define TFT_MOSI 13
