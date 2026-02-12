@@ -1,3 +1,6 @@
 .pio
 
 include/wifi_secrets.h
+build/
+
+__pycache__/

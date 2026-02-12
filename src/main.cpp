@@ -53,6 +53,8 @@ void readResponse(WiFiClient* client) {
         Serial.printf("\nClosing connection\n\n");
 }
 
+void my_btn_event_cb(lv_event_t* e) { Serial.printf("Clicked\n"); }
+
 void setup() {
         Serial.begin(115200);
 
@@ -100,6 +102,13 @@ retry:
         lv_indev_set_read_cb(indev, touchscreen_read_cb_func);
 
         label = lv_label_create(lv_screen_active());
+
+        lv_obj_t* my_button1 = lv_button_create(lv_screen_active());
+        lv_obj_t* my_label1 = lv_label_create(my_button1);
+
+        lv_label_set_text_fmt(my_label1, "Click me!");
+
+        lv_obj_add_event_cb(my_button1, my_btn_event_cb, LV_EVENT_CLICKED, NULL);
 
         lv_label_set_text(label, "Hello PlatformIO, I'm LVGL!");
         lv_obj_set_style_text_color(lv_screen_active(), lv_color_hex(0xffffff),

@@ -1,0 +1,46 @@
+{
+    "monitors": [
+        {
+            "locationStop": {
+                "properties": {
+                    "name": "60200988",
+                    "title": "Palffygasse"
+                }
+            },
+            "name": "43",
+            "towards": "Neuwaldegg",
+            "departures": {
+                "departure": [
+                    {
+                        "departureTime": {
+                            "countdown": 0
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "locationStop": {
+                "properties": {
+                    "name": "60200988",
+                    "title": "Palffygasse"
+                }
+            },
+            "lines": [
+                {
+                    "name": "43",
+                    "towards": "Schottentor",
+                    "departures": {
+                        "departure": [
+                            {
+                                "departureTime": {
+                                    "countdown": 0
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
