@@ -6,6 +6,7 @@
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 
 #include "../include/ArduinoJson.h"
+#include "../src/wl/wl.h"
 #include "httplib.h"
 
 void fetch_realtime_information_for_diva(uint32_t);
