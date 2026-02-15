@@ -11,7 +11,7 @@
 
 #include "ArduinoJson.h"
 
-constexpr uint32_t DEPARTURE_TIME_LIMIT = 30;
+constexpr uint32_t DEPARTURE_TIME_LIMIT = 40;
 
 // TODO: instead of std::vector, use std::map or std::multimap !!!
 // Reason:

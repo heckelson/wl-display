@@ -1,17 +1,20 @@
 #include <SPI.h>
 #include <WiFi.h>
-#include <WiFiClient.h>
+#include <WiFiClientSecure.h>
 #include <XPT2046_Touchscreen.h>
 #include <lvgl.h>
 
 #include <cstdint>
+#include <sstream>
+#include <string>
 
+#include "HardwareSerial.h"
 #include "wifi_secrets.h"
+#include "wl/wl.h"
 
 int status = WL_IDLE_STATUS;
-const char host[] = "example.org";
-// IPAddress server(192, 168, 0, 46);
-const int httpPort = 80;
+std::string host{"www.wienerlinien.at"};
+const int tcpPort = 443;
 
 // Touchscreen pins
 #define XPT2046_IRQ (36)   // T_IRQ
@@ -40,125 +43,152 @@ uint32_t** draw_buffer =
 static uint32_t tick_cb_func();
 void touchscreen_read_cb_func(lv_indev_t*, lv_indev_data_t*);
 
-void readResponse(WiFiClient* client) {
-        Serial.println("Reading response...");
+void readResponse(WiFiClientSecure* client) {
+    Serial.println("Reading response...");
 
-        while (!client->available());
+    std::stringstream ss;
+    while (!client->available());
 
-        while (client->available()) {
-                char c = client->read();
-                Serial.print(c);
-        }
+    // skip headers
+    if (!client->find("\r\n\r\n")) {
+        Serial.println(F("Invalid response"));
+        client->stop();
+        return;
+    }
 
-        Serial.printf("\nClosing connection\n\n");
+    while (client->available()) {
+        char c = client->read();
+        ss << c;
+    }
+
+    std::string result = ss.str();
+    auto stations = WL::deserialize_json_response(ss.str());
+
+    for (auto s : stations) {
+        std::stringstream station_stream;
+
+        station_stream << *s;
+        Serial.println(station_stream.str().c_str());
+    }
+
+    Serial.printf("\nClosing connection\n\n");
 }
 
 void my_btn_event_cb(lv_event_t* e) { Serial.printf("Clicked\n"); }
 
 void setup() {
-        Serial.begin(115200);
+    Serial.begin(115200);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWD);
 
-        WiFi.begin(WIFI_SSID, WIFI_PASSWD);
+    uint32_t DIVA = 60200988;
 
-        while (WiFi.status() != WL_CONNECTED) {
-                delay(500);
-                Serial.print(".");
-        }
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
 
-        Serial.print("IP address: ");
-        Serial.println(WiFi.localIP());
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
 
 retry:
-        WiFiClient client;
-        if (!client.connect(host, httpPort)) {
-                delay(500);
-                Serial.println("Retrying");
-                goto retry;
-        }
-        String footer = String(" HTTP/1.1\r\n") + "Host: " + String(host) +
-                        "\r\n" + "Connection: close\r\n\r\n";
+    WiFiClientSecure client;
+    client.setInsecure();
 
-        client.print("GET /" + footer);
-        readResponse(&client);
+    if (!client.connect(host.c_str(), tcpPort)) {
+        delay(500);
+        Serial.println("Retrying");
+        goto retry;
+    }
+    std::string footer =
+        " HTTP/1.1\r\n"
+        "Host: " +
+        host + "\r\n" + "Connection: close\r\n\r\n";
 
-        touchscreenSPI.begin(XPT2046_CLK, XPT2046_MISO, XPT2046_MOSI,
-                             XPT2046_CS);
-        touchscreen.begin(touchscreenSPI);
-        touchscreen.setRotation(2);
+    std::string request =
+        "GET /ogd_realtime/monitor?diva=" + std::to_string(DIVA) + footer;
 
-        lv_init();
+    Serial.println(request.c_str());
 
-        lv_tick_set_cb(tick_cb_func);
-        lv_display_t* disp;
+    client.print(request.c_str());
+    readResponse(&client);
 
-        disp = lv_tft_espi_create(SCREEN_WIDTH, SCREEN_HEIGHT, draw_buffer,
-                                  sizeof(uint32_t) * DRAW_BUF_SIZE / 4);
-        lv_display_set_rotation(disp, LV_DISPLAY_ROTATION_270);
-        lv_obj_set_style_bg_color(lv_screen_active(), lv_color_hex(0x003a57),
-                                  LV_PART_MAIN);
+    touchscreenSPI.begin(XPT2046_CLK, XPT2046_MISO, XPT2046_MOSI, XPT2046_CS);
+    touchscreen.begin(touchscreenSPI);
+    touchscreen.setRotation(2);
 
-        lv_indev_t* indev = lv_indev_create();
-        lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
-        lv_indev_set_read_cb(indev, touchscreen_read_cb_func);
+    lv_init();
 
-        label = lv_label_create(lv_screen_active());
+    lv_tick_set_cb(tick_cb_func);
+    lv_display_t* disp;
 
-        lv_obj_t* my_button1 = lv_button_create(lv_screen_active());
-        lv_obj_t* my_label1 = lv_label_create(my_button1);
+    disp = lv_tft_espi_create(SCREEN_WIDTH, SCREEN_HEIGHT, draw_buffer,
+                              sizeof(uint32_t) * DRAW_BUF_SIZE / 4);
+    lv_display_set_rotation(disp, LV_DISPLAY_ROTATION_270);
+    lv_obj_set_style_bg_color(lv_screen_active(), lv_color_hex(0x003a57),
+                              LV_PART_MAIN);
 
-        lv_label_set_text_fmt(my_label1, "Click me!");
+    lv_indev_t* indev = lv_indev_create();
+    lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
+    lv_indev_set_read_cb(indev, touchscreen_read_cb_func);
 
-        lv_obj_add_event_cb(my_button1, my_btn_event_cb, LV_EVENT_CLICKED, NULL);
+    label = lv_label_create(lv_screen_active());
 
-        lv_label_set_text(label, "Hello PlatformIO, I'm LVGL!");
-        lv_obj_set_style_text_color(lv_screen_active(), lv_color_hex(0xffffff),
-                                    LV_PART_MAIN);
-        lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_t* my_button1 = lv_button_create(lv_screen_active());
+    lv_obj_t* my_label1 = lv_label_create(my_button1);
 
-        Serial.println("Setup complete!");
-        Serial.flush();
+    lv_label_set_text_fmt(my_label1, "Click me!");
+
+    lv_obj_add_event_cb(my_button1, my_btn_event_cb, LV_EVENT_CLICKED, NULL);
+
+    lv_label_set_text(label, "Hello PlatformIO, I'm LVGL!");
+    lv_obj_set_style_text_color(lv_screen_active(), lv_color_hex(0xffffff),
+                                LV_PART_MAIN);
+    lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+
+    Serial.println("Setup complete!");
+    Serial.flush();
 }
 
 void loop() {
-        lv_task_handler();
-        lv_tick_inc(5);
-        delay(5);
+    lv_task_handler();
+    lv_tick_inc(5);
+    delay(5);
 }
 
 static uint32_t tick_cb_func() {
-        // easy as pie.
-        return millis();
+    // easy as pie.
+    return millis();
 }
 
 void touchscreen_read_cb_func(lv_indev_t* indev, lv_indev_data_t* data) {
-        if (touchscreen.tirqTouched() && touchscreen.touched()) {
-                TS_Point p = touchscreen.getPoint();
-                // Calibrate Touchscreen points with map function to the correct
-                // width and height
-                x = map(p.x, 200, 3700, 1, SCREEN_WIDTH);
-                y = map(p.y, 240, 3800, 1, SCREEN_HEIGHT);
-                z = p.z;
+    if (touchscreen.tirqTouched() && touchscreen.touched()) {
+        TS_Point p = touchscreen.getPoint();
+        // Calibrate Touchscreen points with map function to the correct
+        // width and height
+        x = map(p.x, 200, 3700, 1, SCREEN_WIDTH);
+        y = map(p.y, 240, 3800, 1, SCREEN_HEIGHT);
+        z = p.z;
 
-                data->state = LV_INDEV_STATE_PRESSED;
+        data->state = LV_INDEV_STATE_PRESSED;
 
-                data->point.x = x;
-                data->point.y = y;
+        data->point.x = x;
+        data->point.y = y;
 
-                char* label_text;
-                asprintf(&label_text, "Coords: x=%d, y=%d", x, y);
-                lv_label_set_text(label, label_text);
-                free(label_text);
+        char* label_text;
+        asprintf(&label_text, "Coords: x=%d, y=%d", x, y);
+        lv_label_set_text(label, label_text);
+        free(label_text);
 
-                // Print Touchscreen info about X, Y and Pressure (Z) on the
-                // Serial Monitor
-                Serial.print("X = ");
-                Serial.print(x);
-                Serial.print(" | Y = ");
-                Serial.print(y);
-                Serial.print(" | Pressure = ");
-                Serial.print(z);
-                Serial.println();
-        } else {
-                data->state = LV_INDEV_STATE_RELEASED;
-        }
+        // Print Touchscreen info about X, Y and Pressure (Z) on the
+        // Serial Monitor
+        Serial.print("X = ");
+        Serial.print(x);
+        Serial.print(" | Y = ");
+        Serial.print(y);
+        Serial.print(" | Pressure = ");
+        Serial.print(z);
+        Serial.println();
+    } else {
+        data->state = LV_INDEV_STATE_RELEASED;
+    }
 }

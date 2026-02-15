@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -7,9 +8,8 @@
 
 #include "../src/wl/wl.h"
 
-// #define CPPHTTPLIB_OPENSSL_SUPPORT
-// #include "httplib.h"
-
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+#include "httplib.h"
 #include "liblittletest.h"
 
 std::string example_response;
@@ -73,9 +73,25 @@ LT_BEGIN_AUTO_TEST(wl_tests, test_can_parse_example_resp_into_datastructures) {
     for (const auto& s : stations) {
         std::cout << *s << "\n";
     }
-
 }
 LT_END_TEST(test_can_parse_example_resp_into_datastructures)
+
+LT_BEGIN_AUTO_TEST(wl_tests, test_can_parse_response_from_wl) {
+    httplib::Client cli("https://www.wienerlinien.at");
+
+    uint32_t DIVA = 60200874;  // Michelbeuern
+    auto res = cli.Get("/ogd_realtime/monitor?diva=" + std::to_string(DIVA));
+
+    LT_ASSERT(res);
+
+    if (res) {
+        auto stations = WL::deserialize_json_response(res->body);
+        for (const auto& s : stations) {
+            std::cout << *s << "\n";
+        }
+    }
+}
+LT_END_AUTO_TEST(test_can_parse_response_from_wl)
 
 /* Test main function definition */
 LT_BEGIN_AUTO_TEST_ENV();

@@ -46,24 +46,6 @@
  * - LV_STDLIB_RTTHREAD:    RT-Thread implementation
  * - LV_STDLIB_CUSTOM:      Implement the functions externally
  */
-// #define LV_USE_STDLIB_MALLOC    LV_STDLIB_BUILTIN
-
-/** Possible values
- * - LV_STDLIB_BUILTIN:     LVGL's built in implementation
- * - LV_STDLIB_CLIB:        Standard C functions, like malloc, strlen, etc
- * - LV_STDLIB_MICROPYTHON: MicroPython implementation
- * - LV_STDLIB_RTTHREAD:    RT-Thread implementation
- * - LV_STDLIB_CUSTOM:      Implement the functions externally
- */
-// #define LV_USE_STDLIB_STRING    LV_STDLIB_BUILTIN
-
-/** Possible values
- * - LV_STDLIB_BUILTIN:     LVGL's built in implementation
- * - LV_STDLIB_CLIB:        Standard C functions, like malloc, strlen, etc
- * - LV_STDLIB_MICROPYTHON: MicroPython implementation
- * - LV_STDLIB_RTTHREAD:    RT-Thread implementation
- * - LV_STDLIB_CUSTOM:      Implement the functions externally
- */
 // #define LV_USE_STDLIB_SPRINTF   LV_STDLIB_BUILTIN
 
 #define LV_STDINT_INCLUDE       <stdint.h>
@@ -741,7 +723,7 @@
 
 #define LV_USE_CALENDAR   1
 #if LV_USE_CALENDAR
-    #define LV_CALENDAR_WEEK_STARTS_MONDAY 0
+    #define LV_CALENDAR_WEEK_STARTS_MONDAY 1
     #if LV_CALENDAR_WEEK_STARTS_MONDAY
         #define LV_CALENDAR_DEFAULT_DAY_NAMES {"Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"}
     #else
@@ -839,10 +821,10 @@
 #endif /*LV_USE_THEME_DEFAULT*/
 
 /** A very simple theme that is a good starting point for a custom theme */
-#define LV_USE_THEME_SIMPLE 1
+#define LV_USE_THEME_SIMPLE 0
 
 /** A theme designed for monochrome displays */
-#define LV_USE_THEME_MONO 1
+#define LV_USE_THEME_MONO 0
 
 /*==================
  * LAYOUTS
@@ -1398,10 +1380,10 @@
 *======================*/
 
 /** Enable examples to be built with the library. */
-#define LV_BUILD_EXAMPLES 1
+#define LV_BUILD_EXAMPLES 0
 
 /** Build the demos */
-#define LV_BUILD_DEMOS 1
+#define LV_BUILD_DEMOS 0
 
 /*===================
  * DEMO USAGE
