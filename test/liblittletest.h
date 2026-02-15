@@ -388,14 +388,14 @@ class suite {
     suite(const suite<suite_impl>& s) {}
 };
 
-double calculate_duration(timeval* before, timeval* after) {
+inline double calculate_duration(timeval* before, timeval* after) {
     return ((after->tv_sec * 1000 + (after->tv_usec / 1000.0)) -
             (before->tv_sec * 1000 + (before->tv_usec / 1000.0)));
 }
 
 class test_base;
 
-std::vector<test_base*> auto_test_vector;
+inline std::vector<test_base*> auto_test_vector;
 
 class test_runner {
    public:
@@ -511,7 +511,7 @@ class test_base {
     virtual void operator()() {}
 };
 
-test_runner auto_test_runner;
+inline test_runner auto_test_runner;
 
 template <class test_impl>
 class test : public test_base {

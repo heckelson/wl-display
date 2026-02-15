@@ -3,9 +3,15 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <iostream>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <vector>
+
+#include "ArduinoJson.h"
+
+constexpr uint32_t DEPARTURE_TIME_LIMIT = 30;
 
 // TODO: instead of std::vector, use std::map or std::multimap !!!
 // Reason:
@@ -55,7 +61,7 @@ class Line {
     std::vector<direction_t> get_directions() const;
     direction_t get_direction_by_name(const std::string) const;
 
-    void add_direction(const Direction&);
+    void add_direction(std::shared_ptr<Direction>);
 };
 
 using line_t = std::shared_ptr<Line>;
@@ -73,9 +79,14 @@ class Station {
     std::vector<line_t> get_lines() const;
     line_t get_line_by_name(std::string) const;
 
-    void add_line(const Line&);
+    void add_line(std::shared_ptr<Line>);
 };
 
+std::vector<std::shared_ptr<Station>> deserialize_json_response(
+    const std::string&);
+
 }  // namespace WL
+
+std::ostream& operator<<(std::ostream&, const WL::Station&);
 
 #endif

@@ -7,17 +7,26 @@
                     "title": "Palffygasse"
                 }
             },
-            "name": "43",
-            "towards": "Neuwaldegg",
-            "departures": {
-                "departure": [
-                    {
-                        "departureTime": {
-                            "countdown": 0
-                        }
+            "lines": [
+                {
+                    "name": "43",
+                    "towards": "Neuwaldegg",
+                    "departures": {
+                        "departure": [
+                            {
+                                "departureTime": {
+                                    "countdown": 1
+                                }
+                            },
+                            {
+                                "departureTime": {
+                                    "countdown": 3
+                                }
+                            }
+                        ]
                     }
-                ]
-            }
+                }
+            ]
         },
         {
             "locationStop": {
@@ -34,7 +43,12 @@
                         "departure": [
                             {
                                 "departureTime": {
-                                    "countdown": 0
+                                    "countdown": 2
+                                }
+                            },
+                            {
+                                "departureTime": {
+                                    "countdown": 5
                                 }
                             }
                         ]
