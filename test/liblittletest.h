@@ -18,6 +18,10 @@
    USA
 */
 
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Woverloaded-virtual"
+#pragma GCC diagnostic push
+
 #ifndef _LITTLETEST_HPP_
 #define _LITTLETEST_HPP_
 
@@ -602,3 +606,5 @@ class test : public test_base {
 }
 
 #endif  //_LITTLETEST_HPP_
+
+#pragma GCC diagnostic pop

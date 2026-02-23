@@ -1,6 +1,5 @@
 #include "wl.h"
 
-#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <ostream>
@@ -149,9 +148,8 @@ std::vector<std::shared_ptr<Station>> deserialize_json_response(
     return stations;
 }
 
-}  // namespace WL
 
-std::ostream& operator<<(std::ostream& os, const WL::Station& station) {
+std::ostream& operator<<(std::ostream& os, const Station& station) {
     os << "Station: " << station.get_name() << "\n";
     for (const auto& line : station.get_lines()) {
         os << "  Line: " << line->get_name() << "\n";
@@ -165,3 +163,5 @@ std::ostream& operator<<(std::ostream& os, const WL::Station& station) {
     }
     return os;
 }
+
+}  // namespace WL

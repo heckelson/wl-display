@@ -1,5 +1,5 @@
-#ifndef WL_H
-#define WL_H
+#ifndef _WL_H_
+#define _WL_H_
 
 #include <algorithm>
 #include <cstdint>
@@ -12,11 +12,6 @@
 #include "ArduinoJson.h"
 
 constexpr uint32_t DEPARTURE_TIME_LIMIT = 40;
-
-// TODO: instead of std::vector, use std::map or std::multimap !!!
-// Reason:
-//   It has a find() function already built-in
-//   and sorting is included.
 
 namespace WL {
 using duration_time_t = uint32_t;
@@ -75,18 +70,17 @@ class Station {
     Station(std::string);
 
     std::string get_name() const;
-    // TODO: use pointers for list members. Maybe smart pointers?
     std::vector<line_t> get_lines() const;
     line_t get_line_by_name(std::string) const;
 
     void add_line(std::shared_ptr<Line>);
+
+    friend std::ostream& operator<<(std::ostream&, const Station&);
 };
 
 std::vector<std::shared_ptr<Station>> deserialize_json_response(
     const std::string&);
 
 }  // namespace WL
-
-std::ostream& operator<<(std::ostream&, const WL::Station&);
 
 #endif
