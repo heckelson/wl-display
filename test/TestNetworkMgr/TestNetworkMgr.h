@@ -1,8 +1,10 @@
 #include <algorithm>
 #include <memory>
 
-#include "../../src/NetworkMgr/NetworkMgr.h"
+#include "AppMain/UserSettings.h"
+#include "NetworkMgr/NetworkMgr.h"
 #include "httplib.h"
+#include "wl/wl.h"
 
 class TestNetworkMgr : public NetworkMgr {
    private:
@@ -10,7 +12,11 @@ class TestNetworkMgr : public NetworkMgr {
 
    public:
     TestNetworkMgr();
-    TestNetworkMgr(NetworkOptions);
+    TestNetworkMgr(WifiSettings&);
 
+    [[deprecated]]
     std::string fetch_station_info_by_diva(uint32_t);
+
+    bool check_connection() const;
+    WL::Collection get(WlSettings&);
 };

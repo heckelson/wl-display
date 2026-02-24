@@ -78,6 +78,10 @@ void my_btn_event_cb(lv_event_t* e) { Serial.printf("Clicked\n"); }
 
 void setup() {
     Serial.begin(115200);
+
+    Serial.println(ESP.getFlashChipSize());
+    Serial.print("Flash size: ");
+
     WiFi.begin(WIFI_SSID, WIFI_PASSWD);
 
     uint32_t DIVA = 60200988;

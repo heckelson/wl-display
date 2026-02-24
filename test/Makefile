@@ -2,7 +2,7 @@ BUILD=../build/test
 TARGET=../build/test/test_main
 
 OPTIONS=-g3 -O0 -std=c++17 -pedantic -Wall -Wextra -Wunreachable-code -fdiagnostics-all-candidates
-INCLUDES=-I../include
+INCLUDES=-I../include -I../src
 LINKS=-lssl -lcrypto
 OPENSSL_DIR = /usr/include
 
