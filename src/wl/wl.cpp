@@ -73,6 +73,9 @@ line_t Station::get_line_by_name(std::string station_name) const {
     return nullptr;
 }
 
+/* Collection */
+Collection::Collection() {}
+
 /*
  * Parse JSON string into a list of stations, lines, directions, and durations.
  */
@@ -148,10 +151,9 @@ std::vector<std::shared_ptr<Station>> deserialize_json_response(
     return stations;
 }
 
-
 std::ostream& operator<<(std::ostream& os, const Station& station) {
-    os << "Station: " << station.get_name() << "\n";
-    for (const auto& line : station.get_lines()) {
+    os << "Station: " << station.name << "\n";
+    for (const auto& line : station.lines) {
         os << "  Line: " << line->get_name() << "\n";
         for (const auto& direction : line->get_directions()) {
             os << "  - " << direction->get_name() << "\t";
@@ -160,6 +162,13 @@ std::ostream& operator<<(std::ostream& os, const Station& station) {
             }
             os << "\n";
         }
+    }
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const Collection& collection) {
+    for (const auto& s : collection.stations) {
+        os << *s << "\n";
     }
     return os;
 }

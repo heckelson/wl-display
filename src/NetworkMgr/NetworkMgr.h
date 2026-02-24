@@ -4,14 +4,13 @@
 #include <cstdint>
 #include <string>
 
-struct NetworkOptions {
-    std::string SSID;
-    std::string passwd;
-};
+#include "../AppMain/UserSettings.h"
+#include "../wl/wl.h"
 
 class NetworkMgr {
    public:
     virtual std::string fetch_station_info_by_diva(uint32_t) = 0;
+    virtual WL::Collection get(WlSettings&);
 };
 
 #endif

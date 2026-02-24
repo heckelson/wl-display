@@ -78,6 +78,20 @@ class Station {
     friend std::ostream& operator<<(std::ostream&, const Station&);
 };
 
+class Collection {
+   private:
+    std::vector<std::shared_ptr<Station>> stations;
+
+   public:
+    Collection();
+    std::vector<std::shared_ptr<Station>> get_stations() const;
+    void add_station(std::shared_ptr<Station>);
+
+    void intersect(const Collection&);
+
+    friend std::ostream& operator<<(std::ostream&, const Collection&);
+};
+
 std::vector<std::shared_ptr<Station>> deserialize_json_response(
     const std::string&);
 
