@@ -1,3 +1,4 @@
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <fstream>
@@ -5,7 +6,6 @@
 #include <memory>
 #include <sstream>
 #include <string>
-#include <utility>
 
 #include "AppMain/AppMain.h"
 #include "NetworkMgr/DivaConverter.h"
@@ -138,8 +138,18 @@ LT_END_AUTO_TEST(test_can_intersect_collections)
 LT_BEGIN_AUTO_TEST(wl_tests, test_diva_converter) {
     DivaConverter converter = DivaConverter("../data/name-diva-mapping.csv");
 
-    std::string name = "Palffygasse";
-    std::cout << (converter.get_diva_by_name(name)) << "\n";
+    for (size_t i = 0; i < 10; ++i) {
+        std::string name = "Palffygasse";
+        auto before = std::chrono::high_resolution_clock::now();
+        std::string diva = converter.get_diva_by_name(name);
+        auto after = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(
+            after - before);
+        std::cout << "invocation took " << duration.count() / 1000.0 << "us\n";
+
+        LT_ASSERT_EQ(diva, "60200988")
+    }
+
 }
 LT_END_AUTO_TEST(test_diva_converter)
 
