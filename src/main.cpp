@@ -1,4 +1,6 @@
+#include <FS.h>
 #include <SPI.h>
+#include <SPIFFS.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <XPT2046_Touchscreen.h>
@@ -61,7 +63,6 @@ void readResponse(WiFiClientSecure* client) {
         ss << c;
     }
 
-    std::string result = ss.str();
     auto stations = WL::deserialize_json_response(ss.str());
 
     for (auto s : stations) {
@@ -76,11 +77,32 @@ void readResponse(WiFiClientSecure* client) {
 
 void my_btn_event_cb(lv_event_t* e) { Serial.printf("Clicked\n"); }
 
+void read_csv_file() {
+    if (!SPIFFS.exists("/name-diva-mapping.csv")) {
+        Serial.println("File does not exist!");
+        return;
+    }
+
+    File file = SPIFFS.open("/name-diva-mapping.csv", "r");
+
+    Serial.println("File contents:");
+
+    while (file.available()) {
+        String c = file.readString();
+
+        Serial.print(c);
+    }
+
+    file.close();
+}
+
 void setup() {
     Serial.begin(115200);
 
-    Serial.println(ESP.getFlashChipSize());
-    Serial.print("Flash size: ");
+    SPIFFS.begin(true);
+
+    read_csv_file();
+    return;
 
     WiFi.begin(WIFI_SSID, WIFI_PASSWD);
 

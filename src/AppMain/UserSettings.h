@@ -28,6 +28,7 @@ struct WlSettings {
     //          (U6, Floridsdorf),
     //      ],
     // }
+    // TODO: Replace this with a WL::Collection.
     std::map<station_name_t,
              std::vector<std::pair<line_name_t, direction_name_t>>>
         station_config;

@@ -1,5 +1,6 @@
 #include "wl.h"
 
+#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <ostream>
@@ -8,6 +9,9 @@
 #include "ArduinoJson.h"
 
 namespace WL {
+
+// In this whole file, we don't check for duplicates in the vectors
+// since we trust Wiener Linien to never provide us any duplicates.
 
 /* Departure */
 
@@ -27,6 +31,10 @@ std::vector<departure_t> Direction::get_departures() const {
 
 void Direction::add_departure(const Departure& t) {
     this->departures.push_back(std::make_shared<Departure>(t));
+}
+
+void Direction::set_departures(std::vector<departure_t> new_departures) {
+    this->departures = new_departures;
 }
 
 /* Line */
@@ -50,8 +58,10 @@ direction_t Line::get_direction_by_name(
     return nullptr;
 }
 
-void Line::add_direction(std::shared_ptr<Direction> dir) {
-    this->directions.push_back(dir);
+void Line::add_direction(direction_t dir) { this->directions.push_back(dir); }
+
+void Line::set_directions(std::vector<direction_t> new_directions) {
+    this->directions = new_directions;
 }
 
 /* Station */
@@ -64,8 +74,13 @@ std::vector<line_t> Station::get_lines() const { return this->lines; }
 
 void Station::add_line(line_t line) { this->lines.push_back(line); }
 
+void Station::set_lines(std::vector<line_t> new_lines) {
+    this->lines = new_lines;
+}
+
 line_t Station::get_line_by_name(std::string station_name) const {
     for (auto s : this->lines) {
+        // this is fine since we only have a bunch of em
         if (s->get_name() == station_name) {
             return s;
         }
@@ -74,14 +89,73 @@ line_t Station::get_line_by_name(std::string station_name) const {
 }
 
 /* Collection */
-Collection::Collection() {}
+
+std::vector<std::shared_ptr<Station>> Collection::get_stations() const {
+    return this->stations;
+}
+
+void Collection::add_station(std::shared_ptr<Station> station) {
+    return this->stations.push_back(station);
+}
+
+std::shared_ptr<Station> Collection::get_station_by_name(
+    std::string station_name) const {
+    for (auto s : this->stations) {
+        if (s->get_name() == station_name) {
+            return s;
+        }
+    }
+    return nullptr;
+}
+
+void Collection::intersect(const Collection& other) {
+    // intersect Stations
+    std::vector<std::shared_ptr<Station>> station_intersection;
+
+    for (const auto& station : this->stations) {
+        const auto& maybe_station =
+            other.get_station_by_name(station->get_name());
+        if (maybe_station == nullptr) {
+            continue;
+        }
+
+        // intersect Lines
+        std::vector<std::shared_ptr<Line>> line_intersection;
+
+        for (const auto& line : station->get_lines()) {
+            const auto& maybe_line =
+                maybe_station->get_line_by_name(line->get_name());
+            if (maybe_line == nullptr) {
+                continue;
+            }
+
+            // intersect Directions
+            std::vector<std::shared_ptr<Direction>> direction_intersection;
+
+            for (const auto& direction : line->get_directions()) {
+                const auto& maybe_direction =
+                    maybe_line->get_direction_by_name(direction->get_name());
+
+                if (maybe_direction == nullptr) {
+                    continue;
+                }
+
+                direction_intersection.push_back(direction);
+            }
+            line->set_directions(direction_intersection);
+            line_intersection.push_back(line);
+        }
+        station->set_lines(line_intersection);
+        station_intersection.push_back(station);
+    }
+
+    this->stations = station_intersection;
+}
 
 /*
  * Parse JSON string into a list of stations, lines, directions, and durations.
  */
-
-std::vector<std::shared_ptr<Station>> deserialize_json_response(
-    const std::string& json_str) {
+Collection deserialize_json_response(const std::string& json_str) {
     JsonDocument doc = JsonDocument();
 
     DeserializationError error =
@@ -94,23 +168,23 @@ std::vector<std::shared_ptr<Station>> deserialize_json_response(
 
     JsonArray monitors = doc["data"]["monitors"];
 
-    std::vector<std::shared_ptr<Station>> stations{};
+    Collection collection;
 
     for (JsonVariant monitor : monitors) {
         std::string station_name =
             monitor["locationStop"]["properties"]["title"];
 
         // TODO: There has to be a better way than this lmao.
-        std::shared_ptr<Station> current_station;
+        station_t current_station;
 
-        for (const auto& s : stations) {
+        for (const auto& s : collection.get_stations()) {
             if (s->get_name() == station_name) {
                 current_station = s;
                 goto found_station;
             }
         }
         current_station = std::make_shared<Station>(station_name);
-        stations.push_back(current_station);
+        collection.add_station(current_station);
     found_station:
 
         std::string line_name = monitor["lines"][0]["name"];
@@ -127,16 +201,14 @@ std::vector<std::shared_ptr<Station>> deserialize_json_response(
             }
         }
 
-        std::shared_ptr<Line> line =
-            current_station->get_line_by_name(line_name);
+        line_t line = current_station->get_line_by_name(line_name);
 
         if (line == nullptr) {
             line = std::make_shared<Line>(line_name);
             current_station->add_line(line);
         }
 
-        std::shared_ptr<Direction> direction =
-            line->get_direction_by_name(line_direction);
+        direction_t direction = line->get_direction_by_name(line_direction);
 
         if (direction == nullptr) {
             direction = std::make_shared<Direction>(line_direction);
@@ -148,7 +220,7 @@ std::vector<std::shared_ptr<Station>> deserialize_json_response(
         }
     }
 
-    return stations;
+    return collection;
 }
 
 std::ostream& operator<<(std::ostream& os, const Station& station) {

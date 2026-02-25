@@ -7,9 +7,10 @@
 #include <string>
 #include <utility>
 
-#include "../src/AppMain/AppMain.h"
-#include "../src/wl/wl.h"
+#include "AppMain/AppMain.h"
+#include "NetworkMgr/DivaConverter.h"
 #include "TestNetworkMgr/TestNetworkMgr.h"
+#include "wl/wl.h"
 
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "TestNetworkMgr/httplib.h"
@@ -79,9 +80,9 @@ LT_END_TEST(test_can_create_wl_objects)
 LT_BEGIN_AUTO_TEST(wl_tests, test_can_parse_example_resp_into_datastructures) {
     LT_SKIP()
 
-    auto stations = WL::deserialize_json_response(example_response);
+    auto collection = WL::deserialize_json_response(example_response);
 
-    for (const auto& s : stations) {
+    for (const auto& s : collection.get_stations()) {
         std::cout << *s << "\n";
     }
 }
@@ -98,13 +99,49 @@ LT_BEGIN_AUTO_TEST(wl_tests, test_can_parse_response_from_wl) {
     LT_ASSERT(res);
 
     if (res) {
-        auto stations = WL::deserialize_json_response(res->body);
-        for (const auto& s : stations) {
+        auto collection = WL::deserialize_json_response(res->body);
+        for (const auto& s : collection.get_stations()) {
             std::cout << *s << "\n";
         }
     }
 }
 LT_END_AUTO_TEST(test_can_parse_response_from_wl)
+
+LT_BEGIN_AUTO_TEST(wl_tests, test_can_intersect_collections) {
+    auto collection = WL::deserialize_json_response(example_response);
+
+    WL::Collection other = WL::Collection();
+    auto station = std::make_shared<WL::Station>("Palffygasse");
+    auto line = std::make_shared<WL::Line>("43");
+    auto direction = std::make_shared<WL::Direction>("Neuwaldegg");
+
+    other.add_station(station);
+    station->add_line(line);
+    line->add_direction(direction);
+    direction->add_departure(WL::Departure(2));
+    direction->add_departure(WL::Departure(4));
+    direction->add_departure(WL::Departure(6));
+
+    std::cout << "Before:\n";
+    for (const auto& s : collection.get_stations()) {
+        std::cout << *s << "\n";
+    }
+
+    collection.intersect(other);
+    std::cout << "After:\n";
+    for (const auto& s : collection.get_stations()) {
+        std::cout << *s << "\n";
+    }
+}
+LT_END_AUTO_TEST(test_can_intersect_collections)
+
+LT_BEGIN_AUTO_TEST(wl_tests, test_diva_converter) {
+    DivaConverter converter = DivaConverter("../data/name-diva-mapping.csv");
+
+    std::string name = "Palffygasse";
+    std::cout << (converter.get_diva_by_name(name)) << "\n";
+}
+LT_END_AUTO_TEST(test_diva_converter)
 
 LT_BEGIN_AUTO_TEST(wl_tests, test_setup_appmain_works) {
     TestNetworkMgr network_mgr = TestNetworkMgr{};

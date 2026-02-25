@@ -32,7 +32,9 @@ std::string TestNetworkMgr::fetch_station_info_by_diva(uint32_t diva_code) {
 }
 
 bool TestNetworkMgr::check_connection() const {
-    throw std::runtime_error("// TODO: Not implemented");
+    httplib::Client temp{"https://ping.archlinux.org"};
+    httplib::Result resp = temp.Get("/");
+    return (resp->status == 200);
 }
 
 WL::Collection TestNetworkMgr::get(WlSettings& settings) {
