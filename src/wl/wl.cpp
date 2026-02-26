@@ -4,6 +4,8 @@
 #include <iostream>
 #include <memory>
 #include <ostream>
+#include <sstream>
+#include <string>
 #include <vector>
 
 #include "ArduinoJson.h"
@@ -17,7 +19,7 @@ namespace WL {
 
 Departure::Departure(duration_time_t t) : duration{t} {}
 
-duration_time_t Departure::getDuration() const { return this->duration; }
+duration_time_t Departure::get_duration() const { return this->duration; }
 
 /* Direction */
 
@@ -152,8 +154,40 @@ void Collection::intersect(const Collection& other) {
     this->stations = station_intersection;
 }
 
+std::string Collection::serialize() const {
+    JsonDocument doc;
+
+    for (const station_t& station : this->get_stations()) {
+        auto station_obj = doc[station->get_name()].to<JsonObject>();
+
+        for (const line_t& line : station->get_lines()) {
+            auto line_doc = station_obj[line->get_name()].to<JsonObject>();
+
+            for (const direction_t& direction : line->get_directions()) {
+                auto directions =
+                    line_doc[direction->get_name()].to<JsonArray>();
+
+                for (const departure_t& dep : direction->get_departures()) {
+                    directions.add(dep->get_duration());
+                }
+            }
+        }
+    }
+
+    std::string x;
+    serializeJson(doc, x);
+
+    // I'd rather have an empty json object than the string "null";
+    if (x == "null") {
+        return "{}";
+    }
+
+    return x;
+}
+
 /*
- * Parse JSON string into a list of stations, lines, directions, and durations.
+ * Parse JSON string into a list of stations, lines, directions, and
+ * durations.
  */
 Collection deserialize_json_response(const std::string& json_str) {
     JsonDocument doc = JsonDocument();
@@ -230,7 +264,7 @@ std::ostream& operator<<(std::ostream& os, const Station& station) {
         for (const auto& direction : line->get_directions()) {
             os << "  - " << direction->get_name() << "\t";
             for (const auto& dep : direction->get_departures()) {
-                os << " " << dep->getDuration();
+                os << " " << dep->get_duration();
             }
             os << "\n";
         }

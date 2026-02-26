@@ -23,7 +23,7 @@ class Departure {
    public:
     Departure(duration_time_t);
 
-    duration_time_t getDuration() const;
+    duration_time_t get_duration() const;
 };
 
 using departure_t = std::shared_ptr<Departure>;
@@ -76,7 +76,7 @@ class Station {
     line_t get_line_by_name(std::string) const;
 
     void add_line(std::shared_ptr<Line>);
-    void set_lines(std::vector<std::shared_ptr<Line>>);
+    void set_lines(std::vector<line_t>);
 
     friend std::ostream& operator<<(std::ostream&, const Station&);
 };
@@ -100,8 +100,12 @@ class Collection {
      */
     void intersect(const Collection&);
 
+    std::string serialize() const;
+
     friend std::ostream& operator<<(std::ostream&, const Collection&);
 };
+
+Collection deserialize_settings_json(const std::string&);
 
 Collection deserialize_json_response(const std::string&);
 

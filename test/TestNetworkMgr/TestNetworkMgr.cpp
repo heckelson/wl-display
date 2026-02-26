@@ -31,6 +31,13 @@ std::string TestNetworkMgr::fetch_station_info_by_diva(uint32_t diva_code) {
     return result->body;
 }
 
+void TestNetworkMgr::set_up(const WifiSettings& _) {
+    // we don't need an implementation for this as the OS should
+    // handle it.
+}
+
+bool TestNetworkMgr::is_set_up() const { return true; }
+
 bool TestNetworkMgr::check_connection() const {
     httplib::Client temp{"https://ping.archlinux.org"};
     httplib::Result resp = temp.Get("/");

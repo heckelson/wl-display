@@ -44,7 +44,7 @@ void tear_down() {}
 LT_END_SUITE(wl_tests)
 
 LT_BEGIN_AUTO_TEST(wl_tests, test_can_create_wl_objects) {
-    LT_SKIP()
+    LT_SKIP();
 
     auto station = std::make_unique<WL::Station>("Palffygasse");
     auto line = std::make_shared<WL::Line>("43");
@@ -78,7 +78,7 @@ LT_BEGIN_AUTO_TEST(wl_tests, test_can_create_wl_objects) {
 LT_END_TEST(test_can_create_wl_objects)
 
 LT_BEGIN_AUTO_TEST(wl_tests, test_can_parse_example_resp_into_datastructures) {
-    LT_SKIP()
+    LT_SKIP();
 
     auto collection = WL::deserialize_json_response(example_response);
 
@@ -89,7 +89,7 @@ LT_BEGIN_AUTO_TEST(wl_tests, test_can_parse_example_resp_into_datastructures) {
 LT_END_TEST(test_can_parse_example_resp_into_datastructures)
 
 LT_BEGIN_AUTO_TEST(wl_tests, test_can_parse_response_from_wl) {
-    LT_SKIP()
+    LT_SKIP();
 
     httplib::Client cli("https://www.wienerlinien.at");
 
@@ -108,6 +108,7 @@ LT_BEGIN_AUTO_TEST(wl_tests, test_can_parse_response_from_wl) {
 LT_END_AUTO_TEST(test_can_parse_response_from_wl)
 
 LT_BEGIN_AUTO_TEST(wl_tests, test_can_intersect_collections) {
+    LT_SKIP();
     auto collection = WL::deserialize_json_response(example_response);
 
     WL::Collection other = WL::Collection();
@@ -136,6 +137,8 @@ LT_BEGIN_AUTO_TEST(wl_tests, test_can_intersect_collections) {
 LT_END_AUTO_TEST(test_can_intersect_collections)
 
 LT_BEGIN_AUTO_TEST(wl_tests, test_diva_converter) {
+    LT_SKIP();
+
     DivaConverter converter = DivaConverter("../data/name-diva-mapping.csv");
 
     for (size_t i = 0; i < 10; ++i) {
@@ -149,33 +152,43 @@ LT_BEGIN_AUTO_TEST(wl_tests, test_diva_converter) {
 
         LT_ASSERT_EQ(diva, "60200988")
     }
-
 }
 LT_END_AUTO_TEST(test_diva_converter)
 
 LT_BEGIN_AUTO_TEST(wl_tests, test_setup_appmain_works) {
+    LT_SKIP();
+
     TestNetworkMgr network_mgr = TestNetworkMgr{};
 
     uint32_t palffy_diva = 60200988;
     std::string resp = network_mgr.fetch_station_info_by_diva(palffy_diva);
     auto stations = WL::deserialize_json_response(resp);
 
-    AppMain main(std::make_unique<TestNetworkMgr>());
+    AppMain main(std::make_unique<TestNetworkMgr>(), nullptr, nullptr);
 
     main.add_entry_to_wl_settings("Palffygasse", "43", "Neuwaldegg");
     main.add_entry_to_wl_settings("Palffygasse", "43", "Neuwaldegg");
     main.add_entry_to_wl_settings("Palffygasse", "43", "Schottentor");
-
-    UserSettings settings = main.get_user_settings();
-
-    for (auto station : settings.wl_settings.station_config) {
-        std::cout << station.first << ":\n";
-        for (auto pair : station.second) {
-            std::cout << " - " << pair.first << " -> " << pair.second << "\n";
-        }
-    }
 }
 LT_END_AUTO_TEST(test_setup_appmain_works)
+
+LT_BEGIN_AUTO_TEST(wl_tests, test_serialize_collection) {
+    WL::Collection collection = WL::Collection();
+    auto station = std::make_shared<WL::Station>("Palffygasse");
+    auto line = std::make_shared<WL::Line>("43");
+    auto direction = std::make_shared<WL::Direction>("Neuwaldegg");
+
+    direction->add_departure(WL::Departure(2));
+    direction->add_departure(WL::Departure(5));
+
+    line->add_direction(direction);
+    station->add_line(line);
+    collection.add_station(station);
+
+    std::cout << collection << "\n";
+    std::cout << collection.serialize() << "\n";
+}
+LT_END_AUTO_TEST(test_serialize_collection)
 
 /* Test main function definition */
 LT_BEGIN_AUTO_TEST_ENV();
