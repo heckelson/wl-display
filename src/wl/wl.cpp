@@ -1,6 +1,7 @@
 #include "wl.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <ostream>
@@ -183,6 +184,38 @@ std::string Collection::serialize() const {
     }
 
     return x;
+}
+
+Collection deserialize_settings_json(const std::string& input) {
+    Collection collection;
+    JsonDocument doc = JsonDocument();
+
+    DeserializationError error =
+        deserializeJson(doc, input, DeserializationOption::NestingLimit(7));
+
+    if (error) {
+        // TODO: throw an exception!
+        std::cout << error << "\n";
+        return {};
+    }
+
+    for (JsonPair station : doc.as<JsonObject>()) {
+        auto s = std::make_shared<Station>(station.key().c_str());
+        for (JsonPair line : station.value().as<JsonObject>()) {
+            auto l = std::make_shared<Line>(line.key().c_str());
+            for (JsonPair direction : line.value().as<JsonObject>()) {
+                auto d = std::make_shared<Direction>(direction.key().c_str());
+                for (uint32_t i : direction.value().as<JsonArray>()) {
+                    d->add_departure(Departure(i));
+                }
+                l->add_direction(d);
+            }
+            s->add_line(l);
+        }
+        collection.add_station(s);
+    }
+
+    return collection;
 }
 
 /*

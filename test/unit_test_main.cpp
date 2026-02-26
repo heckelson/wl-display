@@ -185,8 +185,14 @@ LT_BEGIN_AUTO_TEST(wl_tests, test_serialize_collection) {
     station->add_line(line);
     collection.add_station(station);
 
-    std::cout << collection << "\n";
-    std::cout << collection.serialize() << "\n";
+    std::cout << collection;
+
+    std::cout << "Serializing...\n";
+    std::string output = collection.serialize();
+    std::cout << output << "\n";
+
+    std::cout << "Deserializing...\n";
+    std::cout << WL::deserialize_settings_json(output);
 }
 LT_END_AUTO_TEST(test_serialize_collection)
 
