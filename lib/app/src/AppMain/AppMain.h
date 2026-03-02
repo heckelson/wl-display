@@ -1,29 +1,37 @@
-#ifndef _APPMAIN_H_
-#define _APPMAIN_H_
+#ifndef APPMAIN_H
+#define APPMAIN_H
 
 #include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "NetworkMgr.h"
-#include "wl/wl.h"
+#include "DivaConverter.h"
+#include "NetworkMgr/NetworkMgr.h"
 #include "UserSettings.h"
+#include "wl/wl.h"
 
 class AppMain {
    private:
+    // has to be set up after the fact!
     std::unique_ptr<NetworkMgr> network_mgr;
-    std::vector<std::shared_ptr<WL::Station>> stations;
 
-    std::unique_ptr<WlSettings> wl_settings;
-    std::unique_ptr<WifiSettings> wifi_settings;
+    std::vector<std::shared_ptr<WL::Station>> last_response;
+
+    // dependency injected
+    std::shared_ptr<DivaConverter> diva_converter;
+    std::shared_ptr<WlSettings> wl_settings;
+    std::shared_ptr<WifiSettings> wifi_settings;
+
+    // TODO: Add display management class and add it here!
 
    public:
-    AppMain(std::unique_ptr<NetworkMgr>, std::unique_ptr<WlSettings>,
-            std::unique_ptr<WifiSettings>);
+    AppMain(std::shared_ptr<DivaConverter>);
 
     void add_entry_to_wl_settings(std::string, std::string, std::string);
     void update_stations();
+
+    std::shared_ptr<WifiSettings> get_wifi_settings() const;
 };
 
 #endif

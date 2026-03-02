@@ -6,11 +6,19 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include "HardwareSerial.h"
+
+#include <FS.h>
+#include <SPIFFS.h>
+
 
 DivaConverter::DivaConverter(std::string diva_lut_filename) {
     if (diva_lut_filename == "") {
+        Serial.println("DIVA LUT filename missing!");
         throw std::runtime_error("DIVA LUT filename missing!");
     }
+
+    SPIFFS.begin(true);
 
     this->diva_lut_filename = diva_lut_filename;
 }

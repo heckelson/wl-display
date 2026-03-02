@@ -1,3 +1,6 @@
+#ifndef DIVACONVERTER_H
+#define DIVACONVERTER_H
+
 #include <cstdint>
 #include <string>
 #include <unordered_map>
@@ -30,3 +33,5 @@ class DivaConverter {
     std::string get_name_by_diva(const std::string&);
     std::string get_name_by_diva(const uint32_t);
 };
+
+#endif

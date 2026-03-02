@@ -1,5 +1,5 @@
-#ifndef _WL_H_
-#define _WL_H_
+#ifndef WL_H
+#define WL_H
 
 #include <algorithm>
 #include <cstdint>

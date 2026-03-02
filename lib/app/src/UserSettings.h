@@ -1,5 +1,5 @@
-#ifndef _USER_SETTINGS_H_
-#define _USER_SETTINGS_H_
+#ifndef USER_SETTINGS_H
+#define USER_SETTINGS_H
 
 #include <map>
 #include <string>

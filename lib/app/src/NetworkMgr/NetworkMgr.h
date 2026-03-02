@@ -1,5 +1,5 @@
-#ifndef _NETWORKMGR_H_
-#define _NETWORKMGR_H_
+#ifndef NETWORKMGR_H
+#define NETWORKMGR_H
 
 #include <cstdint>
 #include <stdexcept>
@@ -15,7 +15,7 @@
 //
 class NetworkMgr {
    public:
-    virtual void set_up(const WifiSettings&) = 0;
+    virtual bool set_up(const WifiSettings&) = 0;
     virtual bool is_set_up() const = 0;
     virtual bool check_connection() const = 0;
     virtual WL::Collection get(WlSettings&) = 0;
