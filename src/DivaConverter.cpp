@@ -1,11 +1,11 @@
+#include "DivaConverter.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <fstream>
 #include <stdexcept>
 #include <string>
 #include <utility>
-
-#include "NetworkMgr/DivaConverter.h"
 
 DivaConverter::DivaConverter(std::string diva_lut_filename) {
     if (diva_lut_filename == "") {

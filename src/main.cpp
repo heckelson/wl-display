@@ -102,7 +102,7 @@ void setup() {
     SPIFFS.begin(true);
 
     read_csv_file();
-    return;
+    // return;
 
     WiFi.begin(WIFI_SSID, WIFI_PASSWD);
 

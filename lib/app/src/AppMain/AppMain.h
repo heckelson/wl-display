@@ -6,8 +6,8 @@
 #include <utility>
 #include <vector>
 
-#include "../NetworkMgr/NetworkMgr.h"
-#include "../wl/wl.h"
+#include "NetworkMgr.h"
+#include "wl/wl.h"
 #include "UserSettings.h"
 
 class AppMain {

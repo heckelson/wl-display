@@ -5,8 +5,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "../AppMain/UserSettings.h"
-#include "../wl/wl.h"
+#include "UserSettings.h"
+#include "wl/wl.h"
 
 // defines an interface for the Network manager.
 //

@@ -186,6 +186,14 @@ std::string Collection::serialize() const {
     return x;
 }
 
+std::vector<station_t>::iterator Collection::begin() {
+    return this->stations.begin();
+}
+
+std::vector<station_t>::iterator Collection::end() {
+    return this->stations.end();
+}
+
 Collection deserialize_settings_json(const std::string& input) {
     Collection collection;
     JsonDocument doc = JsonDocument();

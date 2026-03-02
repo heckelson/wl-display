@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
+#include <iterator>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -101,6 +102,9 @@ class Collection {
     void intersect(const Collection&);
 
     std::string serialize() const;
+
+    std::vector<station_t>::iterator begin();
+    std::vector<station_t>::iterator end();
 
     friend std::ostream& operator<<(std::ostream&, const Collection&);
 };

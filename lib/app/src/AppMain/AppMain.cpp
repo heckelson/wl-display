@@ -4,7 +4,7 @@
 #include <string>
 #include <utility>
 
-#include "NetworkMgr/NetworkMgr.h"
+#include "NetworkMgr.h"
 #include "UserSettings.h"
 
 AppMain::AppMain(std::unique_ptr<NetworkMgr> network_mgr,
