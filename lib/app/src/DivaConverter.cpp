@@ -58,7 +58,7 @@ std::string DivaConverter::get_name_by_diva(uint32_t diva_code) {
 
 std::pair<std::string, std::string> DivaConverter::fetch_from_file_by_name(
     const std::string& name) {
-    std::ifstream iss(this->diva_lut_filename);
+    std::ifstream iss{this->diva_lut_filename};
 
     if (!iss.is_open()) {
         throw std::runtime_error("Cannot open file: " +

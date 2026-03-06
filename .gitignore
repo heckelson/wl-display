@@ -8,3 +8,4 @@ __pycache__/
 
 *.vpp.bak_*
 *.vpp.lck
+/data/wifi-settings.json

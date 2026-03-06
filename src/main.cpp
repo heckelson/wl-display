@@ -1,4 +1,5 @@
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "AppMain/AppMain.h"
@@ -19,12 +20,14 @@ void setup() {
 
     EspNetworkMgr mgr = EspNetworkMgr();
 
-    WifiSettings settings{
-        .SSID = "",
-        .password = "",
-    };
+    std::optional<WifiSettings> settings = WifiSettings::parse_from_file("/wifi-settings.json");
+    if (settings.has_value()) {
+        Serial.println(settings.value().SSID.c_str());
+        Serial.println(settings.value().password.c_str());
 
-    Serial.println(mgr.set_up(settings));
+        Serial.println(mgr.set_up(settings.value()));
+    }
+
 }
 
 void loop() { delay(500); }
