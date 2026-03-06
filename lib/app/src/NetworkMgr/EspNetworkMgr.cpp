@@ -3,7 +3,6 @@
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 
-#include <memory>
 #include <sstream>
 #include <string>
 

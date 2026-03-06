@@ -32,6 +32,8 @@ class AppMain {
     void update_stations();
 
     std::shared_ptr<WifiSettings> get_wifi_settings() const;
+
+    void loop() const;
 };
 
 #endif

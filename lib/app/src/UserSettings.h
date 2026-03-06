@@ -5,8 +5,11 @@
 #include <FS.h>
 #include <SPIFFS.h>
 
+#include <algorithm>
 #include <map>
 #include <optional>
+#include <ostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <tuple>
@@ -20,11 +23,21 @@ struct WifiSettings {
     std::string SSID;
     std::string password;
 
+    WifiSettings() {}
+    WifiSettings(const std::string& SSID, const std::string& password) {
+        this->SSID = SSID;
+        this->password = password;
+    }
+    WifiSettings(const WifiSettings& other) {
+        this->SSID = other.SSID;
+        this->password = other.password;
+    }
+
     static std::optional<WifiSettings> parse_from_file(
         const std::string& filepath) {
         SPIFFS.begin(true);
 
-        File file = SPIFFS.open(filepath.c_str());
+        File file = SPIFFS.open(filepath.c_str(), "r");
 
         if (!file.available()) {
             Serial.println("Cannot find the WifiSettings file.");
@@ -36,6 +49,8 @@ struct WifiSettings {
             char c = file.read();
             input += c;
         }
+
+        file.close();
 
         JsonDocument doc;
         deserializeJson(doc, input.c_str());
@@ -52,14 +67,31 @@ struct WifiSettings {
             return std::nullopt;
         }
 
-        return WifiSettings{.SSID = std::string{ssid}, .password = std::string{password}};
+        return WifiSettings{.SSID = std::string{ssid},
+                            .password = std::string{password}};
     }
 
     void serialize(const std::string& filepath) {
+        Serial.println("Saving Wifi credentials.");
+
         SPIFFS.begin(true);
-        File file = SPIFFS.open(filepath.c_str());
+        File file = SPIFFS.open(filepath.c_str(), "w");
 
+        if (!file) {
+            Serial.println("Cannot open file.");
+            throw std::runtime_error("Cannot open file " + filepath +
+                                     " for writing.");
+        }
 
+        JsonDocument doc;
+        std::string result;
+        doc["ssid"] = this->SSID;
+        doc["password"] = this->password;
+        serializeJson(doc, result);
+
+        file.print(result.c_str());
+
+        file.close();
     }
 };
 

@@ -1,33 +1,28 @@
 #include <memory>
-#include <optional>
-#include <string>
 
 #include "AppMain/AppMain.h"
 #include "DivaConverter.h"
-#include "NetworkMgr/EspNetworkMgr.h"
-#include "NetworkMgr/NetworkMgr.h"
-#include "UserSettings.h"
+#include "Exceptions.h"
 #include "esp32-hal.h"
+
+// we cannot call this app_main because that name is reserved.
+AppMain* my_app_main;
 
 void setup() {
     delay(1000);
 
-    AppMain* app_main = nullptr;
-    std::shared_ptr<DivaConverter> diva_converter =
-        std::make_shared<DivaConverter>("/name-diva-mapping.csv");
-
-    app_main = new AppMain(diva_converter);
-
-    EspNetworkMgr mgr = EspNetworkMgr();
-
-    std::optional<WifiSettings> settings = WifiSettings::parse_from_file("/wifi-settings.json");
-    if (settings.has_value()) {
-        Serial.println(settings.value().SSID.c_str());
-        Serial.println(settings.value().password.c_str());
-
-        Serial.println(mgr.set_up(settings.value()));
+    try {
+        my_app_main = new AppMain{
+            std::make_shared<DivaConverter>("/name-diva-mapping.csv"),
+        };
+    } catch (BaseException err) {
+        Serial.begin(115200);
+        Serial.print("Uncaught error: ");
+        Serial.println(err.what());
     }
-
 }
 
-void loop() { delay(500); }
+void loop() {
+    // maybe, this is easier.
+    my_app_main->loop();
+}
