@@ -1,10 +1,14 @@
 #include "AppMain.h"
 
+#include <Arduino.h>
+#include <XPT2046_Touchscreen.h>
+#include <lvgl.h>
+
 #include <cstddef>
 #include <memory>
 #include <stdexcept>
 
-#include "HardwareSerial.h"
+#include "DisplayMgr/DisplayMgr.h"
 #include "NetworkMgr/EspNetworkMgr.h"
 #include "UserSettings.h"
 
@@ -13,6 +17,8 @@ AppMain::AppMain(std::shared_ptr<DivaConverter> diva_converter) {
     Serial.println("\n\nInitializing AppMain.");
 
     this->diva_converter = diva_converter;
+
+    DisplayMgr::init();
 
     std::optional<WifiSettings> wifi_settings =
         WifiSettings::parse_from_file("/wifi-settings.json");
@@ -56,4 +62,4 @@ std::shared_ptr<WifiSettings> AppMain::get_wifi_settings() const {
     return this->wifi_settings;
 }
 
-void AppMain::loop() const { delay(500); }
+void AppMain::loop() const { DisplayMgr::loop(); }
