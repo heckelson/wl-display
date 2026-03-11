@@ -37,8 +37,7 @@ bool EspNetworkMgr::set_up(const WifiSettings& wifi_settings) {
     this->client = std::make_shared<WiFiClientSecure>();
     this->client->setInsecure();
 
-    Serial.println("Set up Wifi client.");
-
+    Serial.println("Finished setting up Wifi client.");
     return true;
 }
 

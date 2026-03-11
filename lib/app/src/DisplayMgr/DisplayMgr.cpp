@@ -4,6 +4,8 @@
 #include <XPT2046_Touchscreen.h>
 #include <lvgl.h>
 
+#include "icons/wifi.h"
+
 namespace DisplayMgr {
 SPIClass touchscreenSPI = SPIClass(VSPI);
 XPT2046_Touchscreen touchscreen(XPT2046_CS, XPT2046_IRQ);
@@ -50,6 +52,7 @@ void touchscreen_read_cb_func(lv_indev_t* indev, lv_indev_data_t* data) {
 void my_btn_event_cb(lv_event_t* e) { Serial.printf("Clicked\n"); }
 
 void init() {
+    Serial.println("Initializing DisplayMgr.");
     touchscreenSPI.begin(XPT2046_CLK, XPT2046_MISO, XPT2046_MOSI, XPT2046_CS);
     touchscreen.begin(touchscreenSPI);
     touchscreen.setRotation(2);
@@ -82,6 +85,7 @@ void init() {
     lv_obj_set_style_text_color(lv_screen_active(), lv_color_hex(0xffffff),
                                 LV_PART_MAIN);
     lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+    Serial.println("Finished initializing DisplayMgr.");
 }
 
 void loop() { lv_timer_handler(); }
