@@ -1,7 +1,4 @@
-#include <memory>
-
 #include "AppMain/AppMain.h"
-#include "DivaConverter.h"
 #include "Exceptions.h"
 #include "esp32-hal.h"
 
@@ -12,9 +9,7 @@ void setup() {
     delay(1000);
 
     try {
-        my_app_main = new AppMain{
-            std::make_shared<DivaConverter>("/name-diva-mapping.csv"),
-        };
+        my_app_main = new AppMain{};
     } catch (BaseException err) {
         Serial.begin(115200);
         Serial.print("Uncaught error: ");

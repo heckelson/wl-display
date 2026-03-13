@@ -20,13 +20,12 @@ class AppMain {
 
     // dependency injected
     std::shared_ptr<DivaConverter> diva_converter;
+
     std::shared_ptr<WlSettings> wl_settings;
     std::shared_ptr<WifiSettings> wifi_settings;
 
-    // TODO: Add display management class and add it here!
-
    public:
-    AppMain(std::shared_ptr<DivaConverter>);
+    AppMain();
 
     void add_entry_to_wl_settings(std::string, std::string, std::string);
     void update_stations();

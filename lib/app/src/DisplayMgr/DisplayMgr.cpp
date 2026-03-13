@@ -4,8 +4,6 @@
 #include <XPT2046_Touchscreen.h>
 #include <lvgl.h>
 
-#include "icons/wifi.h"
-
 namespace DisplayMgr {
 SPIClass touchscreenSPI = SPIClass(VSPI);
 XPT2046_Touchscreen touchscreen(XPT2046_CS, XPT2046_IRQ);

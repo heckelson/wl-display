@@ -9,14 +9,16 @@
 #include <stdexcept>
 
 #include "DisplayMgr/DisplayMgr.h"
+#include "DivaConverter.h"
 #include "NetworkMgr/EspNetworkMgr.h"
 #include "UserSettings.h"
 
-AppMain::AppMain(std::shared_ptr<DivaConverter> diva_converter) {
+AppMain::AppMain() {
     Serial.begin(115200);
     Serial.println("\n\nInitializing AppMain.");
 
-    this->diva_converter = diva_converter;
+    this->diva_converter =
+        std::make_shared<DivaConverter>("/name-diva-mapping.csv");
 
     DisplayMgr::init();
 
@@ -62,4 +64,7 @@ std::shared_ptr<WifiSettings> AppMain::get_wifi_settings() const {
     return this->wifi_settings;
 }
 
-void AppMain::loop() const { DisplayMgr::loop(); }
+void AppMain::loop() const {
+    // maybe we want to put this in the head `loop` function?
+    DisplayMgr::loop();
+}

@@ -18,6 +18,8 @@ DivaConverter::DivaConverter(std::string diva_lut_filename) {
         throw std::runtime_error("DIVA LUT filename missing!");
     }
 
+    Serial.println("Initializing DivaConverter.");
+
     SPIFFS.begin(true);
 
     this->diva_lut_filename = diva_lut_filename;
