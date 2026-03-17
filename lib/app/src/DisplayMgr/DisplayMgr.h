@@ -7,6 +7,8 @@
 #include <cstdint>
 
 namespace DisplayMgr {
+
+namespace {
 // pinouts
 const uint8_t XPT2046_IRQ = 36;   // T_IRQ
 const uint8_t XPT2046_MOSI = 32;  // T_DIN
@@ -18,14 +20,13 @@ const uint8_t XPT2046_CS = 33;    // T_CS
 const uint16_t SCREEN_WIDTH = 240;
 const uint16_t SCREEN_HEIGHT = 320;
 
-// concerning the
-constexpr uint16_t DRAW_BUF_SIZE = (SCREEN_WIDTH * SCREEN_HEIGHT / 10 * (LV_COLOR_DEPTH / 8));
+constexpr uint16_t DRAW_BUF_SIZE =
+    (SCREEN_WIDTH * SCREEN_HEIGHT / 10 * (LV_COLOR_DEPTH / 8));
+}  // namespace
 
 static uint32_t tick_cb_func() { return millis(); }
-void touchscreen_read_cb_func(lv_indev_t*, lv_indev_data_t*);
 
-void my_btn_event_cb(lv_event_t*);
-
+void update_system_message(const std::string&);
 void init();
 void loop();
 }  // namespace DisplayMgr

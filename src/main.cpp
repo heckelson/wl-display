@@ -24,7 +24,6 @@ void setup() {
             throw std::runtime_error("MyAppMain creation failed!");
         }
 
-        delay(1000);
         xTaskCreatePinnedToCore(app_main_thread,  // fn
                                 "AppMain_loop",   // name
                                 1000,             // Stack size
@@ -37,6 +36,8 @@ void setup() {
         Serial.begin(115200);
         Serial.print("Uncaught error: ");
         Serial.println(err.what());
+
+        DisplayMgr::update_system_message(err.what());
     }
 }
 
