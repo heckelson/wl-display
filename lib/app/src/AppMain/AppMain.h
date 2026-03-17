@@ -32,7 +32,7 @@ class AppMain {
 
     std::shared_ptr<WifiSettings> get_wifi_settings() const;
 
-    void loop() const;
+    void loop(void*) const;
 };
 
 #endif

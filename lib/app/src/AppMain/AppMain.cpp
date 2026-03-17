@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <stdexcept>
 
 #include "DisplayMgr/DisplayMgr.h"
@@ -43,6 +44,13 @@ AppMain::AppMain() {
         throw std::runtime_error("// TODO: Implement way to set wifi creds. ");
     }
 
+    std::optional<WlSettings> wl_settings =
+        WlSettings::parse_from_file("/wl-settings.json");
+
+    // TODO: Continue here, check if parsing was good.
+    //
+    //
+
     if (this->wifi_settings != nullptr) {
         this->network_mgr = std::make_unique<EspNetworkMgr>();
         bool set_up_nm =
@@ -64,7 +72,10 @@ std::shared_ptr<WifiSettings> AppMain::get_wifi_settings() const {
     return this->wifi_settings;
 }
 
-void AppMain::loop() const {
-    // maybe we want to put this in the head `loop` function?
-    DisplayMgr::loop();
+void AppMain::loop(void* _) const {
+    delay(10'000);
+    // TODO: Write logic that fetches new info, then stores it in last_result
+    // and pushes it to some DisplayMgr maybe? (this will require a mutex)
+
+    Serial.println("AppMain Looping...");
 }

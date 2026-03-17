@@ -97,6 +97,54 @@ struct WifiSettings {
 
 struct WlSettings {
     WL::Collection station_config;
+
+    static std::optional<WlSettings> parse_from_file(
+        const std::string& filename) {
+        SPIFFS.begin(true);
+
+        File file = SPIFFS.open(filepath.c_str(), "r");
+
+        if (!file.available()) {
+            Serial.println("Cannot find the WlSettings file.");
+            return std::nullopt;
+        }
+
+        std::string input = "";
+        while (file.available()) {
+            char c = file.read();
+            input += c;
+        }
+
+        file.close();
+
+        WL::Collection coll = WL::deserialize_settings_json(input);
+
+        if (coll.get_stations().size() == 0) {
+            Serial.println("Collection settings are empty!");
+            return std::nullopt;
+        }
+    }
+
+    void serialize(const std::string& filepath) {
+        Serial.println("Saving WlSettings.");
+
+        SPIFFS.begin(true);
+        File file = SPIFFS.open(filepath.c_str(), "w");
+
+        if (!file) {
+            Serial.println("Cannot open file.");
+            throw std::runtime_error("Cannot open file " + filepath +
+                                     " for writing.");
+        }
+
+        JsonDocument doc;
+        std::string result;
+        doc["station_config"] = this->station_config.serialize();
+        serializeJson(doc, result);
+
+        file.print(result.c_str());
+        file.close();
+    }
 };
 
 #endif
