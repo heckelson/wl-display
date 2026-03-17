@@ -3,13 +3,20 @@
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 
+#include <memory>
 #include <sstream>
 #include <string>
 
+#include "DivaConverter.h"
 #include "HardwareSerial.h"
 #include "UserSettings.h"
 #include "WiFiType.h"
 #include "wl/wl.h"
+
+EspNetworkMgr::EspNetworkMgr() {
+    this->diva_converter =
+        std::make_unique<DivaConverter>("/name-diva-mapping.csv");
+}
 
 bool EspNetworkMgr::set_up(const WifiSettings& wifi_settings) {
     Serial.print("Connecting Wifi");
@@ -86,6 +93,15 @@ bool EspNetworkMgr::check_connection() const {
     return status_code == "200";
 }
 
-WL::Collection EspNetworkMgr::get(WlSettings& settings) {
-    return WL::Collection();
+std::shared_ptr<WL::Collection> EspNetworkMgr::get(
+    std::shared_ptr<WlSettings> settings) {
+    auto collection = std::make_shared<WL::Collection>();
+
+    for (const auto& station : settings->station_config) {
+        Serial.print("// TODO: GET ");
+        Serial.println(station->get_name().c_str());
+    }
+
+    collection->intersect(settings->station_config);
+    return collection;
 }

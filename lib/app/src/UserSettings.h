@@ -99,7 +99,7 @@ struct WlSettings {
     WL::Collection station_config;
 
     static std::optional<WlSettings> parse_from_file(
-        const std::string& filename) {
+        const std::string& filepath) {
         SPIFFS.begin(true);
 
         File file = SPIFFS.open(filepath.c_str(), "r");
@@ -117,12 +117,14 @@ struct WlSettings {
 
         file.close();
 
-        WL::Collection coll = WL::deserialize_settings_json(input);
+        WL::Collection collection = WL::deserialize_settings_json(input);
 
-        if (coll.get_stations().size() == 0) {
+        if (collection.get_stations().size() == 0) {
             Serial.println("Collection settings are empty!");
             return std::nullopt;
         }
+
+        return WlSettings{.station_config = collection};
     }
 
     void serialize(const std::string& filepath) {

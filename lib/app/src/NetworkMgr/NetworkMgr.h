@@ -2,6 +2,7 @@
 #define NETWORKMGR_H
 
 #include <cstdint>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
@@ -18,7 +19,8 @@ class NetworkMgr {
     virtual bool set_up(const WifiSettings&) = 0;
     virtual bool is_set_up() const = 0;
     virtual bool check_connection() const = 0;
-    virtual WL::Collection get(WlSettings&) = 0;
+    virtual std::shared_ptr<WL::Collection> get(
+        std::shared_ptr<WlSettings>) = 0;
 };
 
 #endif

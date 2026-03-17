@@ -1,6 +1,5 @@
 #include "wl.h"
 
-#include <algorithm>
 #include <cstdint>
 #include <iostream>
 #include <memory>
@@ -196,27 +195,30 @@ std::vector<station_t>::iterator Collection::end() {
 
 Collection deserialize_settings_json(const std::string& input) {
     Collection collection;
-    JsonDocument doc = JsonDocument();
+    JsonDocument doc;
 
     DeserializationError error =
-        deserializeJson(doc, input, DeserializationOption::NestingLimit(7));
+        deserializeJson(doc, input, DeserializationOption::NestingLimit(8));
 
     if (error) {
         // TODO: throw an exception!
-        std::cout << error << "\n";
+        Serial.println(error.c_str());
         return {};
     }
 
-    for (JsonPair station : doc.as<JsonObject>()) {
+    // we have to drill down into the station_config part.
+    JsonDocument station_config = doc["station_config"].as<JsonObject>();
+
+    for (JsonPair station : station_config.as<JsonObject>()) {
         auto s = std::make_shared<Station>(station.key().c_str());
         for (JsonPair line : station.value().as<JsonObject>()) {
             auto l = std::make_shared<Line>(line.key().c_str());
             for (JsonPair direction : line.value().as<JsonObject>()) {
-                auto d = std::make_shared<Direction>(direction.key().c_str());
+                auto dir = std::make_shared<Direction>(direction.key().c_str());
                 for (uint32_t i : direction.value().as<JsonArray>()) {
-                    d->add_departure(Departure(i));
+                    dir->add_departure(Departure(i));
                 }
-                l->add_direction(d);
+                l->add_direction(dir);
             }
             s->add_line(l);
         }
