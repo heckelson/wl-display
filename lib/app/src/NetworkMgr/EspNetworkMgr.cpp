@@ -95,13 +95,42 @@ bool EspNetworkMgr::check_connection() const {
 
 std::shared_ptr<WL::Collection> EspNetworkMgr::get(
     std::shared_ptr<WlSettings> settings) {
-    auto collection = std::make_shared<WL::Collection>();
+    if (settings->station_config.get_stations().size() == 0) {
+        Serial.println("Warning: No stations configured.");
+    }
+
+    std::string request = "";
+    request += "GET /ogd_realtime/monitor?";
+
+    bool first = true;
+    for (const auto& station : settings->station_config) {
+        if (!first) request += "&";
+        first = false;
+
+        Serial.print("Fetching station: ");
+        Serial.println(station->get_name().c_str());
+
+        std::string diva_code =
+            this->diva_converter->get_diva_by_name(station->get_name());
+
+        Serial.print("Found diva code: ");
+        Serial.println(diva_code.c_str());
+
+        request += "diva=" + diva_code;
+    }
+
+    request +=
+        " "
+        "HTTP / 1.1\r\n"
+        "Host: www.wienerlinien.at\r\n"
+        "Connection: close\r\n\r\n";
+
+    Serial.println(request.c_str());
 
     for (const auto& station : settings->station_config) {
         Serial.print("// TODO: GET ");
         Serial.println(station->get_name().c_str());
     }
 
-    collection->intersect(settings->station_config);
-    return collection;
+    return std::make_shared<WL::Collection>();
 }

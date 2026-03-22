@@ -1,16 +1,18 @@
 #include "DivaConverter.h"
 
+#include <FS.h>
+#include <SPIFFS.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <fstream>
 #include <stdexcept>
 #include <string>
 #include <utility>
+
 #include "HardwareSerial.h"
 
-#include <FS.h>
-#include <SPIFFS.h>
-
+// FIXME: The impl does not work on the ESP!!! Must rewrite!
 
 DivaConverter::DivaConverter(std::string diva_lut_filename) {
     if (diva_lut_filename == "") {
@@ -18,9 +20,28 @@ DivaConverter::DivaConverter(std::string diva_lut_filename) {
         throw std::runtime_error("DIVA LUT filename missing!");
     }
 
-    Serial.println("Initializing DivaConverter.");
+    Serial.print("Initializing DivaConverter with file ");
+    Serial.print(diva_lut_filename.c_str());
+    Serial.println(".");
 
     SPIFFS.begin(true);
+
+    Serial.println("Testing fetching of DivaConverter.");
+
+    try {
+        Serial.println("Given Palffygasse, what's the diva of the station?");
+        std::string diva_code = this->get_diva_by_name("Palffygasse");
+        Serial.print("Answer (should be 60200988): ");
+        Serial.println(diva_code.c_str());
+    } catch (const std::runtime_error& err) {
+        Serial.print("ERROR: ");
+        Serial.println(err.what());
+    }
+
+    Serial.println("Given 60201920, what's the Name of the station?");
+    std::string station_name = this->get_name_by_diva("60201920");
+    Serial.print("Answer (should be Eduardgasse): ");
+    Serial.println(station_name.c_str());
 
     this->diva_lut_filename = diva_lut_filename;
 }

@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <stdexcept>
-#include <string>
 
 #include "DisplayMgr/DisplayMgr.h"
 #include "NetworkMgr/EspNetworkMgr.h"
