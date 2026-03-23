@@ -27,7 +27,7 @@ class DivaConverter {
         const std::string&);
 
    public:
-    DivaConverter(std::string);
+    DivaConverter(const std::string&);
 
     std::string get_diva_by_name(const std::string&);
     std::string get_name_by_diva(const std::string&);
