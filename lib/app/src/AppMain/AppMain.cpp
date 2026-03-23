@@ -52,6 +52,7 @@ void AppMain::setup_wifi_settings() {
         }
     }
 }
+
 void AppMain::setup_wl_settings() {
     std::optional<WlSettings> wl_settings =
         WlSettings::parse_from_file("/wl-settings.json");
@@ -70,6 +71,7 @@ void AppMain::setup_wl_settings() {
             "// TODO: Implement way to handle 'no WL settings'.");
     }
 }
+
 AppMain::AppMain() {
     Serial.begin(115200);
     Serial.println("\n\nInitializing AppMain.");
@@ -88,16 +90,17 @@ std::shared_ptr<WifiSettings> AppMain::get_wifi_settings() const {
 }
 
 void AppMain::loop(void* _) {
-    delay(2'000);
+    delay(5'000);
 
     Serial.println("AppMain Looping...");
 
     if (this->network_mgr != nullptr) {
         std::shared_ptr<WL::Collection> resp =
             this->network_mgr->get(this->wl_settings);
-
         if (resp != nullptr) {
             this->last_response = resp;
+            DisplayMgr::update_example_message(resp);
+
         } else {
             Serial.println("Got a bad response fetching stations.");
         }

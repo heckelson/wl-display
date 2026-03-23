@@ -5,6 +5,9 @@
 #include <lvgl.h>
 
 #include <cstdint>
+#include <memory>
+
+#include "wl/wl.h"
 
 namespace DisplayMgr {
 
@@ -26,6 +29,7 @@ constexpr uint16_t DRAW_BUF_SIZE =
 
 static uint32_t tick_cb_func() { return millis(); }
 
+void update_example_message(std::shared_ptr<WL::Collection>);
 void update_system_message(const std::string&);
 void init();
 void loop();

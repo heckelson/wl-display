@@ -1,5 +1,15 @@
 {
     "station_config": {
-        "Palffygasse": { "43": { "Neuwaldegg": [], "Schottentor U": [] } }
+        "Palffygasse": {
+            "43": {
+                "Neuwaldegg": [],
+                "Schottentor U": []
+            }
+        },
+        "Eduardgasse": {
+            "42": {
+                "Schottentor U": []
+            }
+        }
     }
 }

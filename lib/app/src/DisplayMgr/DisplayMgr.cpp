@@ -5,6 +5,10 @@
 #include <lvgl.h>
 
 #include <cstdlib>
+#include <memory>
+#include <sstream>
+
+#include "wl/wl.h"
 
 namespace DisplayMgr {
 
@@ -17,6 +21,9 @@ int x, y, z;
 uint32_t** draw_buffer =
     (uint32_t**)malloc(sizeof(uint32_t) * DRAW_BUF_SIZE / 4);
 lv_obj_t* system_msg_label = nullptr;
+
+lv_obj_t* example_label = nullptr;
+
 }  // namespace
 
 void touchscreen_read_cb_func(lv_indev_t* indev, lv_indev_data_t* data) {
@@ -59,6 +66,13 @@ void update_system_message(const std::string& new_message) {
     lv_label_set_text(system_msg_label, new_message.c_str());
 }
 
+void update_example_message(std::shared_ptr<WL::Collection> new_data) {
+    std::stringstream ss;
+    ss << *new_data;
+
+    lv_label_set_text(example_label, ss.str().c_str());
+}
+
 void init() {
     Serial.println("Initializing DisplayMgr.");
 
@@ -85,6 +99,10 @@ void init() {
     lv_indev_t* indev = lv_indev_create();
     lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
     lv_indev_set_read_cb(indev, touchscreen_read_cb_func);
+
+    example_label = lv_label_create(lv_screen_active());
+    lv_obj_align(example_label, LV_ALIGN_TOP_LEFT, 0, 0);
+    lv_label_set_text(example_label, "...");
 
     // init system message label.
     system_msg_label = lv_label_create(lv_screen_active());
