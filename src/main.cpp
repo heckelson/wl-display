@@ -26,7 +26,7 @@ void setup() {
 
         xTaskCreatePinnedToCore(app_main_thread,  // fn
                                 "AppMain_loop",   // name
-                                1000,             // Stack size
+                                10000,             // Stack size
                                 NULL,             // input params
                                 0,                // priority
                                 NULL,             // task handle
