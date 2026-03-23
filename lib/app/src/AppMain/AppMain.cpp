@@ -76,6 +76,8 @@ AppMain::AppMain() {
 
     DisplayMgr::init();
 
+    SPIFFS.begin(true);
+
     setup_wl_settings();
 
     setup_wifi_settings();

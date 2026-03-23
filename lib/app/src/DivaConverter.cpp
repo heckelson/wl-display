@@ -12,8 +12,6 @@
 constexpr int max_cache_size = 10;
 
 DivaConverter::DivaConverter(const std::string& diva_lut_filename) {
-    SPIFFS.begin(true);
-
     if (diva_lut_filename == "") {
         Serial.println("DIVA LUT filename missing!");
         throw std::runtime_error("DIVA LUT filename missing!");

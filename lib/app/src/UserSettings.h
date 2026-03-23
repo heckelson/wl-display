@@ -35,8 +35,6 @@ struct WifiSettings {
 
     static std::optional<WifiSettings> parse_from_file(
         const std::string& filepath) {
-        SPIFFS.begin(true);
-
         File file = SPIFFS.open(filepath.c_str(), "r");
 
         if (!file.available()) {
@@ -74,7 +72,6 @@ struct WifiSettings {
     void serialize(const std::string& filepath) {
         Serial.println("Saving Wifi credentials.");
 
-        SPIFFS.begin(true);
         File file = SPIFFS.open(filepath.c_str(), "w");
 
         if (!file) {
@@ -100,7 +97,6 @@ struct WlSettings {
 
     static std::optional<WlSettings> parse_from_file(
         const std::string& filepath) {
-        SPIFFS.begin(true);
 
         File file = SPIFFS.open(filepath.c_str(), "r");
 
@@ -130,7 +126,6 @@ struct WlSettings {
     void serialize(const std::string& filepath) {
         Serial.println("Saving WlSettings.");
 
-        SPIFFS.begin(true);
         File file = SPIFFS.open(filepath.c_str(), "w");
 
         if (!file) {
