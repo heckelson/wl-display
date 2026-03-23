@@ -4,7 +4,6 @@
 #include <iostream>
 #include <memory>
 #include <ostream>
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -232,7 +231,8 @@ Collection deserialize_settings_json(const std::string& input) {
  * Parse JSON string into a list of stations, lines, directions, and
  * durations.
  */
-Collection deserialize_json_response(const std::string& json_str) {
+std::shared_ptr<Collection> deserialize_json_response(
+    const std::string& json_str) {
     JsonDocument doc = JsonDocument();
 
     DeserializationError error =
@@ -245,7 +245,7 @@ Collection deserialize_json_response(const std::string& json_str) {
 
     JsonArray monitors = doc["data"]["monitors"];
 
-    Collection collection;
+    auto collection = std::make_shared<Collection>();
 
     for (JsonVariant monitor : monitors) {
         std::string station_name =
@@ -254,14 +254,14 @@ Collection deserialize_json_response(const std::string& json_str) {
         // TODO: There has to be a better way than this lmao.
         station_t current_station;
 
-        for (const auto& s : collection.get_stations()) {
+        for (const auto& s : collection->get_stations()) {
             if (s->get_name() == station_name) {
                 current_station = s;
                 goto found_station;
             }
         }
         current_station = std::make_shared<Station>(station_name);
-        collection.add_station(current_station);
+        collection->add_station(current_station);
     found_station:
 
         std::string line_name = monitor["lines"][0]["name"];

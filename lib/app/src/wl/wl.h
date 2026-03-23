@@ -111,7 +111,7 @@ class Collection {
 
 Collection deserialize_settings_json(const std::string&);
 
-Collection deserialize_json_response(const std::string&);
+std::shared_ptr<Collection> deserialize_json_response(const std::string&);
 
 }  // namespace WL
 

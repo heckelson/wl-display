@@ -88,7 +88,7 @@ std::shared_ptr<WifiSettings> AppMain::get_wifi_settings() const {
 }
 
 void AppMain::loop(void* _) {
-    delay(10'000);
+    delay(2'000);
 
     Serial.println("AppMain Looping...");
 

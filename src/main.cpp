@@ -24,9 +24,11 @@ void setup() {
             throw std::runtime_error("MyAppMain creation failed!");
         }
 
+        // we create a new task on core 0 because
+        // LVGL runs on core 1!
         xTaskCreatePinnedToCore(app_main_thread,  // fn
                                 "AppMain_loop",   // name
-                                10000,             // Stack size
+                                10'000,           // Stack size
                                 NULL,             // input params
                                 0,                // priority
                                 NULL,             // task handle
