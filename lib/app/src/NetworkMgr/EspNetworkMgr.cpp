@@ -3,6 +3,7 @@
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 
+#include <cstdint>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -22,20 +23,15 @@ EspNetworkMgr::EspNetworkMgr() {
 bool EspNetworkMgr::set_up(const WifiSettings& wifi_settings) {
     Serial.print("Connecting Wifi");
 
-    wl_status_t status =
-        WiFi.begin(wifi_settings.SSID.c_str(), wifi_settings.password.c_str());
-    int num_retries = 16;
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
+    WiFi.begin(wifi_settings.SSID.c_str(), wifi_settings.password.c_str());
+    WiFi.begin(wifi_settings.SSID.c_str(), wifi_settings.password.c_str());
+    uint8_t status = WiFi.waitForConnectResult();
 
-        num_retries--;
-
-        if (num_retries == 0) {
-            Serial.println("Failed to connect to Wifi network!");
-            return false;
-        }
+    if (status != WL_CONNECTED) {
+        Serial.println("Failed to connect to Wifi network!");
+        return false;
     }
+
     Serial.println("\nWifi connected.");
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
@@ -130,9 +126,9 @@ std::shared_ptr<WL::Collection> EspNetworkMgr::get(
         " "
         "HTTP/1.1\r\n"
         "Host: www.wienerlinien.at\r\n"
+        "DNT: 1\r\n"
         "Connection: close\r\n\r\n";
 
-    Serial.println(request.c_str());
     this->client->print(request.c_str());
 
     delay(200);  // this seems to help with stuff not getting stuck.
@@ -146,16 +142,14 @@ std::shared_ptr<WL::Collection> EspNetworkMgr::get(
         return nullptr;
     }
 
-    Serial.println("Reading response.");
-    std::stringstream ss;
-    while (client->available()) {
-        char c = client->read();
-        ss << c;
+    // waiting for response.
+    while (client->connected() && !client->available()) {
+        delay(5);
     }
 
+    Serial.println("Reading response.");
+    std::string response = client->readString().c_str();
     this->client->stop();
-
-    std::string response = ss.str();
 
     std::string::size_type sep = response.find(' ');
     if (sep == std::string::npos) {
